@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+<title>Ministerio de Limpieza</title>
+
+<style>
+
+body{
+font-family: Arial;
+background: linear-gradient(135deg,#0f3d73,#1f6fb2);
+padding:20px;
+margin:0;
+}
+
+.container{
+max-width:1000px;
+margin:auto;
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+.header{
+text-align:center;
+margin-bottom:15px;
+}
+
+.header h1{
+color:#1f4f82;
+margin:0;
+}
+
+.header h2{
+color:#3c6ea8;
+font-weight:normal;
+margin-top:5px;
+}
+
+.versiculo{
+background:#eef5ff;
+padding:15px;
+border-left:5px solid #1f6fb2;
+border-radius:6px;
+margin-top:15px;
+font-style:italic;
+color:#333;
+display:none;
+}
+
+.referencia{
+margin-top:8px;
+font-weight:bold;
+color:#1f4f82;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+th,td{
+border:1px solid #ddd;
+padding:10px;
+text-align:center;
+}
+
+th{
+background:#1f6fb2;
+color:white;
+font-size:16px;
+}
+
+td:first-child{
+font-weight:bold;
+background:#f0f6ff;
+}
+
+input{
+width:95%;
+padding:6px;
+border-radius:5px;
+border:1px solid #ccc;
+}
+
+button{
+padding:12px 25px;
+border:none;
+border-radius:6px;
+font-size:15px;
+cursor:pointer;
+}
+
+.guardar{
+background:#3498db;
+color:white;
+}
+
+.guardar:hover{
+background:#2c80b4;
+}
+
+.enviar{
+background:#1f6fb2;
+color:white;
+}
+
+.enviar:hover{
+background:#184f82;
+}
+
+.login{
+text-align:center;
+padding:40px;
+}
+
+.login input{
+padding:10px;
+font-size:16px;
+width:250px;
+}
+
+.login button{
+background:#1f6fb2;
+color:white;
+}
+
+.botones{
+display:flex;
+justify-content:space-between;
+margin-top:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+<h1>Ministerio de Limpieza</h1>
+<h2>Registro Devocional Semanal</h2>
+
+<div id="versiculo" class="versiculo">
+“Porque Dios no es injusto para olvidar vuestra obra y el trabajo de amor que habéis mostrado hacia su nombre, habiendo servido a los santos y sirviéndoles aún.”
+<div class="referencia">
+Hebreos 6:10 — Reina-Valera 1960
+</div>
+</div>
+
+</div>
+
+<div id="login" class="login">
+
+<h3>Ingresar Usuario</h3>
+
+<input id="usuario" placeholder="Escribe tu usuario">
+
+<br><br>
+
+<button onclick="entrar()">Entrar</button>
+
+</div>
+
+<div id="app" style="display:none">
+
+<h3 id="titulo"></h3>
+
+<table>
+
+<tr>
+<th>Día</th>
+<th>Lectura</th>
+<th>Oración</th>
+<th>Lo que Dios me habló</th>
+</tr>
+
+<tbody id="tabla"></tbody>
+
+</table>
+
+<div class="botones">
+
+<button class="guardar" onclick="guardar()">Guardar</button>
+
+<button class="enviar" onclick="enviar()">Enviar</button>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const dias=[
+"Lunes",
+"Martes",
+"Miércoles",
+"Jueves",
+"Viernes",
+"Sábado"
+];
+
+let usuario="";
+
+window.onload=function(){
+
+let usuarioGuardado=localStorage.getItem("usuario");
+
+if(usuarioGuardado){
+
+usuario=usuarioGuardado;
+
+document.getElementById("login").style.display="none";
+document.getElementById("app").style.display="block";
+
+document.getElementById("titulo").innerText="Usuario: "+usuario;
+
+document.getElementById("versiculo").style.display="block";
+
+crearTabla();
+
+setTimeout(cargarDatos,200);
+
+}
+
+}
+
+function entrar(){
+
+usuario=document.getElementById("usuario").value;
+
+if(usuario==""){
+alert("Escribe un usuario");
+return;
+}
+
+localStorage.setItem("usuario",usuario);
+
+document.getElementById("login").style.display="none";
+document.getElementById("app").style.display="block";
+
+document.getElementById("titulo").innerText="Usuario: "+usuario;
+
+document.getElementById("versiculo").style.display="block";
+
+crearTabla();
+
+}
+
+function crearTabla(){
+
+let html="";
+
+dias.forEach(d=>{
+
+html+=`
+<tr>
+
+<td>${d}</td>
+
+<td><input id="${d}-lectura"></td>
+
+<td><input id="${d}-oracion"></td>
+
+<td><input id="${d}-dios"></td>
+
+</tr>
+`;
+
+});
+
+document.getElementById("tabla").innerHTML=html;
+
+}
+
+function guardar(){
+
+let data={};
+
+dias.forEach(d=>{
+
+data[d]={
+
+lectura:document.getElementById(d+"-lectura").value,
+oracion:document.getElementById(d+"-oracion").value,
+dios:document.getElementById(d+"-dios").value
+
+}
+
+});
+
+localStorage.setItem("datos",JSON.stringify(data));
+
+alert("Progreso guardado");
+
+}
+
+function cargarDatos(){
+
+let datos=JSON.parse(localStorage.getItem("datos"));
+
+if(!datos) return;
+
+dias.forEach(d=>{
+
+if(datos[d]){
+
+document.getElementById(d+"-lectura").value=datos[d].lectura || "";
+document.getElementById(d+"-oracion").value=datos[d].oracion || "";
+document.getElementById(d+"-dios").value=datos[d].dios || "";
+
+}
+
+});
+
+}
+
+function enviar(){
+
+let datos=[];
+
+let incompleto=false;
+
+dias.forEach(d=>{
+
+let lectura=document.getElementById(d+"-lectura").value;
+let oracion=document.getElementById(d+"-oracion").value;
+let dios=document.getElementById(d+"-dios").value;
+
+if(!lectura || !oracion || !dios){
+
+incompleto=true;
+
+}
+
+datos.push({
+
+usuario:usuario,
+dia:d,
+lectura:lectura,
+oracion:oracion,
+dios:dios
+
+});
+
+});
+
+if(incompleto){
+
+alert("Debes llenar todos los campos antes de enviar");
+
+return;
+
+}
+
+fetch("https://script.google.com/macros/s/AKfycbxZTxuiT_P5VBJUAnIBRL32nNsRhMvkTyjEnFPaJtk4fVGujf-SRTjTplS-lFmuqWdd9A/exec",{
+
+method:"POST",
+body:JSON.stringify(datos)
+
+})
+
+.then(r=>r.text())
+.then(()=>{
+
+alert("Datos enviados correctamente");
+
+localStorage.removeItem("datos");
+
+});
+
+}
+
+</script>
+
+</body>
+</html>
